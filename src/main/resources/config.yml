@@ -1,0 +1,42 @@
+# ElyonaItems 設定ファイル
+
+# MIMICの買取価格 (Cr)
+mimic_buy_prices:
+  # 移動系
+  speed_device_1: 500
+  speed_device_2: 2000
+  jump_system: 8000
+  inertia_unit: 25000
+  phase_jump_device: 100000
+  # 戦闘系
+  combat_chip_1: 500
+  shield_generator: 2000
+  heat_exoskeleton: 8000
+  combat_stimulant: 8000
+  combat_system_all: 25000
+  super_soldier_suit: 100000
+  # 感知系
+  night_vision_goggles: 500
+  bio_scanner: 2000
+  area_scan_pulse: 8000
+  tactical_prediction: 25000
+  # 生産系
+  mining_gloves: 500
+  resource_compressor: 2000
+  mining_amplifier: 8000
+  precision_explosive: 25000
+  # 生存系
+  med_pack: 500
+  auto_regen: 2000
+  nano_heal: 8000
+  life_support: 25000
+  # 特殊系
+  gravity_bomb: 8000
+  time_field: 25000
+  ares_system: 100000
+
+# カスタム効果の更新間隔 (ticks)
+custom_effect_interval: 20
+
+# MythicアイテムのGUIへの表示を制限する
+mythic_restricted: true

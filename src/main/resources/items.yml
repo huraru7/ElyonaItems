@@ -1,0 +1,419 @@
+items:
+  # ━━ 移動系 ━━
+  speed_device_1:
+    display: "速度増強デバイス・I"
+    rarity: COMMON
+    type: EQUIPMENT
+    durability: true
+    max_durability: 300
+    category: MOVEMENT
+    lore_flavor: "大戦時代の歩兵用補助装甲の残骸。それでも機能する。"
+    base_item: LEATHER_BOOTS
+    effects:
+      - type: SPEED
+        min: 10
+        max: 30
+
+  speed_device_2:
+    display: "速度増強デバイス・II"
+    rarity: UNCOMMON
+    type: EQUIPMENT
+    durability: true
+    max_durability: 500
+    category: MOVEMENT
+    lore_flavor: "より高度な速度補助技術が統合されている。古いが。"
+    base_item: LEATHER_BOOTS
+    effects:
+      - type: SPEED
+        min: 50
+        max: 100
+
+  jump_system:
+    display: "跳躍強化システム"
+    rarity: RARE
+    type: EQUIPMENT
+    durability: false
+    category: MOVEMENT
+    lore_flavor: "軽量化された骨格補助システムが跳躍力を劇的に向上させる。"
+    base_item: IRON_BOOTS
+    effects:
+      - type: SPEED
+        min: 30
+        max: 50
+      - type: JUMP_BOOST
+        min: 1
+        max: 3
+
+  inertia_unit:
+    display: "慣性制御ユニット"
+    rarity: EPIC
+    type: EQUIPMENT
+    durability: false
+    category: MOVEMENT
+    lore_flavor: "最前線の兵士が使った移動技術の遺物。運動を制御する。"
+    base_item: DIAMOND_BOOTS
+    effects:
+      - type: SPEED
+        min: 150
+        max: 200
+      - type: SLOW_FALLING
+        min: 1
+        max: 1
+
+  phase_jump_device:
+    display: "位相跳躍補助装置"
+    rarity: LEGENDARY
+    type: EQUIPMENT
+    durability: false
+    category: MOVEMENT
+    lore_flavor: "大戦末期の特殊部隊専用装甲。空間そのものを歪める。"
+    base_item: NETHERITE_BOOTS
+    effects:
+      - type: SPEED
+        min: 350
+        max: 400
+      - type: JUMP_BOOST
+        min: 4
+        max: 5
+      - type: SLOW_FALLING
+        min: 1
+        max: 1
+      - type: DOLPHINS_GRACE
+        min: 1
+        max: 1
+
+  # ━━ 戦闘系 ━━
+  combat_chip_1:
+    display: "戦闘補助チップ・I"
+    rarity: COMMON
+    type: EQUIPMENT
+    durability: true
+    max_durability: 300
+    category: COMBAT
+    lore_flavor: "歩兵用の簡易な戦闘補助システム。"
+    base_item: LEATHER_CHESTPLATE
+    effects:
+      - type: STRENGTH
+        min: 5
+        max: 15
+
+  shield_generator:
+    display: "防護フィールド発生装置"
+    rarity: UNCOMMON
+    type: EQUIPMENT
+    durability: true
+    max_durability: 400
+    category: COMBAT
+    lore_flavor: "研究施設で実験されていた防護技術の試作品。"
+    base_item: IRON_CHESTPLATE
+    effects:
+      - type: RESISTANCE
+        min: 1
+        max: 2
+      - type: KNOCKBACK_RESISTANCE
+        min: 1
+        max: 1
+
+  heat_exoskeleton:
+    display: "耐熱外骨格システム"
+    rarity: RARE
+    type: EQUIPMENT
+    durability: false
+    category: COMBAT
+    lore_flavor: "極端環境での運用を想定した外骨格。炎を恐れない。"
+    base_item: DIAMOND_CHESTPLATE
+    effects:
+      - type: FIRE_RESISTANCE
+        min: 1
+        max: 1
+
+  combat_stimulant:
+    display: "戦闘覚醒剤"
+    rarity: RARE
+    type: CONSUMABLE
+    duration_seconds_min: 240
+    duration_seconds_max: 300
+    category: COMBAT
+    lore_flavor: "一時的に戦闘能力を極限まで引き上げる。副作用あり。"
+    base_item: POTION
+    effects:
+      - type: STRENGTH
+        min: 2
+        max: 3
+      - type: SPEED
+        min: 1
+        max: 2
+    after_effects:
+      - type: SLOWNESS
+        min: 1
+        max: 2
+        duration_seconds: 30
+
+  combat_system_all:
+    display: "全領域統合戦闘補助システム"
+    rarity: EPIC
+    type: EQUIPMENT
+    durability: false
+    category: COMBAT
+    lore_flavor: "複数系統の高級軍事装甲を攻防一体の究極形態に。"
+    base_item: DIAMOND_CHESTPLATE
+    effects:
+      - type: STRENGTH
+        min: 2
+        max: 3
+      - type: RESISTANCE
+        min: 2
+        max: 3
+      - type: FIRE_RESISTANCE
+        min: 1
+        max: 1
+
+  super_soldier_suit:
+    display: "超兵士強化スーツ"
+    rarity: LEGENDARY
+    type: EQUIPMENT
+    durability: false
+    category: COMBAT
+    lore_flavor: "大戦の超兵士プロジェクトの産物。人間の限界を超える。"
+    base_item: NETHERITE_CHESTPLATE
+    effects:
+      - type: STRENGTH
+        min: 4
+        max: 5
+      - type: RESISTANCE
+        min: 3
+        max: 4
+      - type: FIRE_RESISTANCE
+        min: 1
+        max: 1
+      - type: SPEED
+        min: 1
+        max: 2
+
+  # ━━ 感知系 ━━
+  night_vision_goggles:
+    display: "暗視ゴーグル"
+    rarity: COMMON
+    type: EQUIPMENT
+    durability: true
+    max_durability: 400
+    category: SENSING
+    lore_flavor: "廃墟の暗がりを見通してきた古びたゴーグル。今も機能する。"
+    base_item: LEATHER_HELMET
+    effects:
+      - type: NIGHT_VISION
+        min: 1
+        max: 1
+
+  bio_scanner:
+    display: "生体反応スキャナー"
+    rarity: UNCOMMON
+    type: EQUIPMENT
+    durability: true
+    max_durability: 300
+    category: SENSING
+    lore_flavor: "周囲の生命反応を感知する。生きているか死んでいるかを判断する。"
+    base_item: IRON_HELMET
+    effects:
+      - type: GLOWING_MOBS
+        radius_min: 16
+        radius_max: 32
+
+  area_scan_pulse:
+    display: "広域スキャンパルス"
+    rarity: RARE
+    type: CONSUMABLE
+    category: SENSING
+    lore_flavor: "使用した瞬間、広域の情報が耳に流れ込む。"
+    base_item: FIREWORK_STAR
+    effects:
+      - type: SCAN_PULSE
+        radius_min: 40
+        radius_max: 50
+        duration_seconds: 10
+
+  tactical_prediction:
+    display: "戦術予測システム"
+    rarity: EPIC
+    type: EQUIPMENT
+    durability: false
+    category: SENSING
+    lore_flavor: "研究施設の最高機密装備。敵の次の動きが見える。"
+    base_item: DIAMOND_HELMET
+    effects:
+      - type: GLOWING_MOBS
+        radius_min: 32
+        radius_max: 48
+      - type: NIGHT_VISION
+        min: 1
+        max: 1
+
+  # ━━ 生産・採掘系 ━━
+  mining_gloves:
+    display: "採掘強化グローブ"
+    rarity: COMMON
+    type: EQUIPMENT
+    durability: true
+    max_durability: 250
+    category: PRODUCTION
+    lore_flavor: "採掘作業を補助する手袋。地中の資源を効率よく採掘できる。"
+    base_item: LEATHER_LEGGINGS
+    effects:
+      - type: HASTE
+        min: 1
+        max: 2
+
+  resource_compressor:
+    display: "資源圧縮モジュール"
+    rarity: UNCOMMON
+    type: EQUIPMENT
+    durability: false
+    category: PRODUCTION
+    lore_flavor: "アイテムを自動圧縮する。持ち帰れる資源が増える。"
+    base_item: IRON_LEGGINGS
+    effects:
+      - type: INVENTORY_COMPRESS
+        min: 1
+        max: 1
+
+  mining_amplifier:
+    display: "採掘増幅装置"
+    rarity: RARE
+    type: EQUIPMENT
+    durability: false
+    category: PRODUCTION
+    lore_flavor: "研究施設の資源採掘部門が使用して、レアドロップを引き寄せる。"
+    base_item: DIAMOND_LEGGINGS
+    effects:
+      - type: HASTE
+        min: 2
+        max: 3
+      - type: LUCK
+        min: 1
+        max: 2
+
+  precision_explosive:
+    display: "精密解析炸薬"
+    rarity: EPIC
+    type: CONSUMABLE
+    category: PRODUCTION
+    lore_flavor: "起爆すると鉱石を精密に解析・採掘する。"
+    base_item: TNT
+    effects:
+      - type: AREA_MINE
+        min: 1
+        max: 1
+
+  # ━━ 生存・回復系 ━━
+  med_pack:
+    display: "応急医療パック"
+    rarity: COMMON
+    type: CONSUMABLE
+    category: SURVIVAL
+    lore_flavor: "大戦時代の歩兵用応急キットの残存品。"
+    base_item: HONEY_BOTTLE
+    effects:
+      - type: INSTANT_HEALTH
+        min: 4
+        max: 8
+
+  auto_regen:
+    display: "自動回復システム"
+    rarity: UNCOMMON
+    type: EQUIPMENT
+    durability: true
+    max_durability: 400
+    category: SURVIVAL
+    lore_flavor: "負傷を自動修復するシステム。継続的な戦闘を可能にする。"
+    base_item: IRON_CHESTPLATE
+    effects:
+      - type: REGENERATION
+        min: 1
+        max: 2
+
+  nano_heal:
+    display: "ナノ治癒剤"
+    rarity: RARE
+    type: CONSUMABLE
+    duration_seconds_min: 50
+    duration_seconds_max: 60
+    category: SURVIVAL
+    lore_flavor: "研究施設で開発された医療技術。瞬時に全傷を癒す。"
+    base_item: POTION
+    effects:
+      - type: INSTANT_HEALTH
+        min: 20
+        max: 20
+      - type: REGENERATION
+        min: 2
+        max: 3
+
+  life_support:
+    display: "安全生命維持装置"
+    rarity: EPIC
+    type: EQUIPMENT
+    durability: false
+    category: SURVIVAL
+    lore_flavor: "大戦末期の超高価な軍用医療装甲。生存を保証する。"
+    base_item: DIAMOND_CHESTPLATE
+    effects:
+      - type: REGENERATION
+        min: 3
+        max: 4
+      - type: SATURATION
+        min: 1
+        max: 1
+
+  # ━━ 特殊・複合系 ━━
+  gravity_bomb:
+    display: "重力制御擲弾"
+    rarity: RARE
+    type: CONSUMABLE
+    category: SPECIAL
+    lore_flavor: "重力をねじ曲げる兵器。敵を一点に集める。"
+    base_item: FIREWORK_STAR
+    effects:
+      - type: GRAVITY_PULL
+        radius_min: 8
+        radius_max: 12
+
+  time_field:
+    display: "時間圧縮フィールド"
+    rarity: EPIC
+    type: EQUIPMENT
+    durability: true
+    max_durability: 200
+    category: SPECIAL
+    lore_flavor: "時間流を操作するフィールドを展開する。"
+    base_item: DIAMOND_LEGGINGS
+    effects:
+      - type: SLOW_AURA
+        radius_min: 3
+        radius_max: 5
+        slow_level_min: 1
+        slow_level_max: 2
+
+  ares_system:
+    display: "統合戦闘制御システム「ARES」"
+    rarity: LEGENDARY
+    type: EQUIPMENT
+    durability: false
+    category: SPECIAL
+    lore_flavor: "大戦後のプロジェクトの遺物。すべての能力を統合した究極の装甲。1シーズンに数個しか存在しない。"
+    base_item: NETHERITE_CHESTPLATE
+    effects:
+      - type: STRENGTH
+        min: 3
+        max: 4
+      - type: RESISTANCE
+        min: 2
+        max: 3
+      - type: SPEED
+        min: 2
+        max: 3
+      - type: REGENERATION
+        min: 2
+        max: 3
+      - type: GLOWING_MOBS
+        radius_min: 32
+        radius_max: 48

@@ -1,0 +1,24 @@
+name: ElyonaItems
+version: 1.0.0
+main: world.elyona.items.ElyonaItemsPlugin
+api-version: '1.21'
+authors: [Elyona World]
+depend: [ElyonaCore, ItemsAdder]
+
+commands:
+  mimic:
+    description: MIMICアイテム売却コマンド
+    usage: /mimic sell
+    permission: elyona.mimic.sell
+  elyona:
+    description: ElyonaItems管理コマンド
+    usage: /elyona <give|reload> [args...]
+    permission: elyona.admin
+
+permissions:
+  elyona.mimic.sell:
+    description: MIMICへのアイテム売却
+    default: true
+  elyona.admin:
+    description: ElyonaItems管理権限
+    default: op
