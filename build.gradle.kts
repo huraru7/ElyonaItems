@@ -15,15 +15,20 @@ repositories {
 dependencies {
     paperweight.paperDevBundle("1.21.1-R0.1-SNAPSHOT")
     compileOnly(files("libs/ElyonaCore.jar"))
-    compileOnly(files("libs/ItemsAdder.jar"))
+    compileOnly(files("libs/ElyonaEconomy.jar"))
 }
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
+tasks {
+    assemble {
+        dependsOn(reobfJar)
+    }
+    withType<JavaCompile> {
+        options.encoding = "UTF-8"
+    }
 }
 
 tasks.jar {

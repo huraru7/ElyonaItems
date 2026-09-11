@@ -3,7 +3,7 @@ version: 1.0.0
 main: world.elyona.items.ElyonaItemsPlugin
 api-version: '1.21'
 authors: [Elyona World]
-depend: [ElyonaCore, ItemsAdder]
+depend: [ElyonaCore, ElyonaEconomy]
 
 commands:
   mimic:

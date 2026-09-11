@@ -17,6 +17,15 @@ import java.util.List;
 public class EffectApplier {
 
     private static final int PERMANENT_DURATION = Integer.MAX_VALUE;
+
+    /** 装備エフェクトとして付与しうる全PotionEffectType（一律除去時に使用） */
+    private static final List<PotionEffectType> MANAGED_POTION_TYPES = List.of(
+            PotionEffectType.SPEED, PotionEffectType.JUMP_BOOST, PotionEffectType.SLOW_FALLING,
+            PotionEffectType.DOLPHINS_GRACE, PotionEffectType.STRENGTH, PotionEffectType.RESISTANCE,
+            PotionEffectType.FIRE_RESISTANCE, PotionEffectType.NIGHT_VISION, PotionEffectType.REGENERATION,
+            PotionEffectType.SATURATION, PotionEffectType.HASTE, PotionEffectType.LUCK
+    );
+
     private final ElyonaItemsPlugin plugin;
     private final CustomEffectManager customEffectManager;
 
@@ -45,6 +54,17 @@ public class EffectApplier {
      */
     public void removeEquipmentEffects(Player player, ItemDefinition def, int quality) {
         removeEffects(player, def.getEffects(), quality, def.getId());
+    }
+
+    /**
+     * 装備由来のポーション効果を、現在の防具の中身に関係なく一律で除去する。
+     * 外した直後は防具スロットが空になり「何のアイテムの効果だったか」が
+     * 特定できないため、装備スロットの再スキャンではなく全種類を対象にする。
+     */
+    public void removeAllManagedPotionEffects(Player player) {
+        for (PotionEffectType type : MANAGED_POTION_TYPES) {
+            player.removePotionEffect(type);
+        }
     }
 
     private void applyEffects(Player player, List<EffectDefinition> effects, int quality,

@@ -90,19 +90,13 @@ public class EquipmentListener implements Listener {
     }
 
     /**
-     * プレイヤーの全ElyonaItemsエフェクトを除去する。
+     * プレイヤーの全ElyonaItems装備エフェクトを除去する。
+     * 外された直後は防具スロットが空で「何を外したか」を特定できないため、
+     * 現在の装備内容に関係なく管理対象のエフェクトを一律で除去する。
      */
     private void removeAllEquipmentEffects(Player player) {
-        PlayerInventory inv = player.getInventory();
-        ItemStack[] armorContents = inv.getArmorContents();
-
-        for (ItemStack item : armorContents) {
-            if (!itemManager.isElyonaItem(item)) continue;
-            ItemDefinition def = itemManager.getDefinition(item);
-            if (def == null || def.getType() != ItemType.EQUIPMENT) continue;
-            int quality = itemManager.getQuality(item);
-            effectApplier.removeEquipmentEffects(player, def, quality);
-        }
+        effectApplier.removeAllManagedPotionEffects(player);
+        plugin.getCustomEffectManager().cleanup(player);
     }
 
     private boolean isArmorSlotIndex(int slot) {

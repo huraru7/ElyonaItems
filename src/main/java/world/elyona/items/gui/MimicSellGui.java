@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import world.elyona.economy.ElyonaEconomyPlugin;
 import world.elyona.items.ElyonaItemsPlugin;
 import world.elyona.items.api.ItemManager;
 import world.elyona.items.model.ItemDefinition;
@@ -49,23 +50,37 @@ public class MimicSellGui implements Listener {
             elyonaItems.add(new ItemWithSlot(item, i));
         }
 
-        if (elyonaItems.isEmpty()) {
-            player.sendMessage("§7[MIMIC] §fElyonaItemsのアイテムを持っていないようですね。");
-            return;
-        }
-
-        // GUIを作成 (9の倍数、最大54スロット)
-        int rows = Math.min(6, (elyonaItems.size() / 9) + 1);
+        // GUIを作成 (9の倍数、最大54スロット。所持品が空でも1行だけ開いて空である旨を表示する)
+        int rows = elyonaItems.isEmpty() ? 1 : Math.min(6, (elyonaItems.size() / 9) + 1);
         Inventory gui = Bukkit.createInventory(null, rows * 9,
                 Component.text(GUI_TITLE));
 
-        for (int i = 0; i < elyonaItems.size() && i < rows * 9; i++) {
-            ItemStack original = elyonaItems.get(i).item;
-            ItemStack displayItem = createDisplayItem(original);
-            gui.setItem(i, displayItem);
+        if (elyonaItems.isEmpty()) {
+            gui.setItem(4, createEmptyNotice());
+        } else {
+            for (int i = 0; i < elyonaItems.size() && i < rows * 9; i++) {
+                ItemStack original = elyonaItems.get(i).item;
+                ItemStack displayItem = createDisplayItem(original);
+                gui.setItem(i, displayItem);
+            }
         }
 
         player.openInventory(gui);
+    }
+
+    /**
+     * 売却可能なアイテムを何も所持していない場合に表示する案内アイテム。
+     */
+    private ItemStack createEmptyNotice() {
+        ItemStack item = new ItemStack(Material.BARRIER);
+        ItemMeta meta = item.getItemMeta();
+        LegacyComponentSerializer ser = LegacyComponentSerializer.legacyAmpersand();
+        meta.displayName(ser.deserialize("&c売れるアイテムがありません")
+                .decoration(TextDecoration.ITALIC, false));
+        meta.lore(List.of(ser.deserialize("&7超技術アイテムを所持していないようです")
+                .decoration(TextDecoration.ITALIC, false)));
+        item.setItemMeta(meta);
+        return item;
     }
 
     /**
@@ -128,16 +143,32 @@ public class MimicSellGui implements Listener {
             return;
         }
 
-        // MIMICの口調で通知
-        player.sendMessage("§7[MIMIC] §f「§e" + itemName
-                + "§f」§7(品質: §e" + quality + "§7) を §6Cr " + String.format("%,d", price)
-                + " §fで買い取りました。");
+        // Cred付与
+        boolean credited = creditPlayer(player, price);
 
-        // TODO: ElyonaCoreのMIMIC通知API・通貨APIと連携
-        // ElyonaCore.getMimicMessenger().sendSell(player, itemName, quality, price);
-        // ElyonaCore.getEconomy().deposit(player, price);
+        // MIMICの口調で通知
+        if (credited) {
+            player.sendMessage("§7[MIMIC] §f「§e" + itemName
+                    + "§f」§7(品質: §e" + quality + "§7) を §6Cr " + String.format("%,d", price)
+                    + " §fで買い取りました。");
+        } else {
+            player.sendMessage("§7[MIMIC] §f買取処理中にエラーが発生しました。運営にお問い合わせください。");
+        }
 
         player.closeInventory();
+    }
+
+    /**
+     * ElyonaEconomy経由でプレイヤーにCredを付与する。ElyonaEconomyが見つからない場合はfalseを返す。
+     */
+    private boolean creditPlayer(Player player, long price) {
+        var economyPlugin = Bukkit.getPluginManager().getPlugin("ElyonaEconomy");
+        if (!(economyPlugin instanceof ElyonaEconomyPlugin economy)) {
+            plugin.getLogger().warning("ElyonaEconomyが見つからないため、売却報酬を付与できませんでした。");
+            return false;
+        }
+        economy.getEconomyCache().addBalance(player.getUniqueId(), price);
+        return true;
     }
 
     /**
