@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import world.elyona.items.ElyonaItemsPlugin;
+import world.elyona.items.combat.PlayerStatManager;
 import world.elyona.items.effect.custom.CustomEffectManager;
 import world.elyona.items.model.EffectDefinition;
 import world.elyona.items.model.EffectType;
@@ -13,25 +14,34 @@ import java.util.List;
 
 /**
  * ElyonaItemsのエフェクトをプレイヤーに付与・除去するクラス。
+ * STRENGTH（攻撃力）・RESISTANCE（防御力）はバニラのポーション効果ではなく、
+ * PlayerStatManagerによるフラット加算/減算のダメージボーナスとして扱う。
  */
 public class EffectApplier {
 
     private static final int PERMANENT_DURATION = Integer.MAX_VALUE;
 
-    /** 装備エフェクトとして付与しうる全PotionEffectType（一律除去時に使用） */
+    /**
+     * 装備エフェクトとして付与しうる全PotionEffectType（一律除去時に使用）。
+     * STRENGTHは完全にフラット化したため対象外。RESISTANCEはEffectType.RESISTANCE自体は
+     * フラット化したが、KNOCKBACK_RESISTANCEが引き続きPotionEffectType.RESISTANCEに
+     * マッピングされているため、除去対象には残す。
+     */
     private static final List<PotionEffectType> MANAGED_POTION_TYPES = List.of(
             PotionEffectType.SPEED, PotionEffectType.JUMP_BOOST, PotionEffectType.SLOW_FALLING,
-            PotionEffectType.DOLPHINS_GRACE, PotionEffectType.STRENGTH, PotionEffectType.RESISTANCE,
+            PotionEffectType.DOLPHINS_GRACE, PotionEffectType.RESISTANCE,
             PotionEffectType.FIRE_RESISTANCE, PotionEffectType.NIGHT_VISION, PotionEffectType.REGENERATION,
             PotionEffectType.SATURATION, PotionEffectType.HASTE, PotionEffectType.LUCK
     );
 
     private final ElyonaItemsPlugin plugin;
     private final CustomEffectManager customEffectManager;
+    private final PlayerStatManager statManager;
 
-    public EffectApplier(ElyonaItemsPlugin plugin, CustomEffectManager customEffectManager) {
+    public EffectApplier(ElyonaItemsPlugin plugin, CustomEffectManager customEffectManager, PlayerStatManager statManager) {
         this.plugin = plugin;
         this.customEffectManager = customEffectManager;
+        this.statManager = statManager;
     }
 
     /**
@@ -72,6 +82,20 @@ public class EffectApplier {
         for (EffectDefinition effect : effects) {
             EffectType type = effect.getType();
 
+            if (type == EffectType.STRENGTH || type == EffectType.RESISTANCE) {
+                // 装備分はEquipmentListener側で装備一式をスキャンしてまとめて集計するため、
+                // ここでは消耗品（duration有限）の一時ボーナスだけ処理する。
+                if (durationTicks != PERMANENT_DURATION) {
+                    double amount = effect.calculateValue(quality);
+                    if (type == EffectType.STRENGTH) {
+                        statManager.addTemporaryAttackBonus(plugin, player.getUniqueId(), amount, durationTicks);
+                    } else {
+                        statManager.addTemporaryDefenseBonus(plugin, player.getUniqueId(), amount, durationTicks);
+                    }
+                }
+                continue;
+            }
+
             if (isCustomEffect(type)) {
                 applyCustomEffect(player, effect, quality, itemId);
                 continue;
@@ -104,6 +128,11 @@ public class EffectApplier {
     private void removeEffects(Player player, List<EffectDefinition> effects, int quality, String itemId) {
         for (EffectDefinition effect : effects) {
             EffectType type = effect.getType();
+
+            if (type == EffectType.STRENGTH || type == EffectType.RESISTANCE) {
+                // 装備由来のフラットボーナスはEquipmentListener側で再計算されるため、ここでは何もしない
+                continue;
+            }
 
             if (isCustomEffect(type)) {
                 removeCustomEffect(player, type, itemId);

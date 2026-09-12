@@ -1,10 +1,16 @@
 package world.elyona.items.api;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -90,8 +96,64 @@ public class ItemGenerator {
         // バニラの耐久度表示を無効化
         meta.setUnbreakable(true);
 
+        // ベース素材（ダイヤ防具・ネザライト防具等）が本来持つ防御力・耐久・ノックバック耐性等の
+        // 属性補正を無効化する。効果はElyonaが定義したエフェクトのみにする。
+        // 注: 空のMultimapを渡すだけだとPaperがデフォルト属性を使う扱いにしてしまうため、
+        // 関係する属性それぞれに明示的に0を設定する必要がある。
+        meta.setAttributeModifiers(zeroOutDefaultAttributes(def.getBaseItem()));
+
         item.setItemMeta(meta);
         return item;
+    }
+
+    /**
+     * ベース素材が本来持つデフォルト属性（防具の防御力・防具強度・ノックバック耐性、
+     * 武器の攻撃力・攻撃速度）を、該当スロットに対して明示的に0で上書きするMultimapを作る。
+     * 防具・武器のいずれでもない素材（ポーション等）はそのまま空のMultimapを返す。
+     */
+    private Multimap<Attribute, AttributeModifier> zeroOutDefaultAttributes(Material baseItem) {
+        Multimap<Attribute, AttributeModifier> modifiers = HashMultimap.create();
+        String name = baseItem.name();
+
+        EquipmentSlotGroup slotGroup;
+        List<Attribute> attributesToZero = new ArrayList<>();
+
+        if (name.endsWith("_HELMET")) {
+            slotGroup = EquipmentSlotGroup.HEAD;
+            attributesToZero.add(Attribute.GENERIC_ARMOR);
+            attributesToZero.add(Attribute.GENERIC_ARMOR_TOUGHNESS);
+            attributesToZero.add(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
+        } else if (name.endsWith("_CHESTPLATE")) {
+            slotGroup = EquipmentSlotGroup.CHEST;
+            attributesToZero.add(Attribute.GENERIC_ARMOR);
+            attributesToZero.add(Attribute.GENERIC_ARMOR_TOUGHNESS);
+            attributesToZero.add(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
+        } else if (name.endsWith("_LEGGINGS")) {
+            slotGroup = EquipmentSlotGroup.LEGS;
+            attributesToZero.add(Attribute.GENERIC_ARMOR);
+            attributesToZero.add(Attribute.GENERIC_ARMOR_TOUGHNESS);
+            attributesToZero.add(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
+        } else if (name.endsWith("_BOOTS")) {
+            slotGroup = EquipmentSlotGroup.FEET;
+            attributesToZero.add(Attribute.GENERIC_ARMOR);
+            attributesToZero.add(Attribute.GENERIC_ARMOR_TOUGHNESS);
+            attributesToZero.add(Attribute.GENERIC_KNOCKBACK_RESISTANCE);
+        } else if (name.endsWith("_SWORD") || name.endsWith("_AXE")
+                || baseItem == Material.TRIDENT || baseItem == Material.MACE) {
+            slotGroup = EquipmentSlotGroup.HAND;
+            attributesToZero.add(Attribute.GENERIC_ATTACK_DAMAGE);
+            attributesToZero.add(Attribute.GENERIC_ATTACK_SPEED);
+        } else {
+            // 防具・武器以外（ポーション・蜂蜜瓶・TNT等）はデフォルト属性を持たないため何もしない
+            return modifiers;
+        }
+
+        for (Attribute attribute : attributesToZero) {
+            modifiers.put(attribute, new AttributeModifier(
+                    new NamespacedKey(plugin, "elyona_zero_" + attribute.name().toLowerCase()),
+                    0.0, AttributeModifier.Operation.ADD_NUMBER, slotGroup));
+        }
+        return modifiers;
     }
 
     private List<Component> buildLore(ItemDefinition def, int quality) {
@@ -163,12 +225,12 @@ public class ItemGenerator {
             case SLOW_FALLING -> "落下軽減";
             case DOLPHINS_GRACE -> "水中加速";
             case STRENGTH -> {
-                int amp = effect.calculateAmplifier(quality);
-                yield "攻撃力強化 Lv." + (amp + 1);
+                int val = (int) Math.round(effect.calculateValue(quality));
+                yield "攻撃力 +" + val;
             }
             case RESISTANCE -> {
-                int amp = effect.calculateAmplifier(quality);
-                yield "ダメージ軽減 Lv." + (amp + 1);
+                int val = (int) Math.round(effect.calculateValue(quality));
+                yield "防御力 +" + val;
             }
             case KNOCKBACK_RESISTANCE -> "ノックバック耐性";
             case FIRE_RESISTANCE -> "火炎耐性";

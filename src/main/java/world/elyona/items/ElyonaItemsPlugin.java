@@ -3,6 +3,13 @@ package world.elyona.items;
 import org.bukkit.plugin.java.JavaPlugin;
 import world.elyona.items.api.ItemGenerator;
 import world.elyona.items.api.ItemManager;
+import world.elyona.items.combat.ArmorDisplay;
+import world.elyona.items.combat.AttackDamageListener;
+import world.elyona.items.combat.HologramManager;
+import world.elyona.items.combat.MobDamageListener;
+import world.elyona.items.combat.PlayerStatManager;
+import world.elyona.items.combat.VanillaItemDisplayListener;
+import world.elyona.items.combat.WeaponDisplay;
 import world.elyona.items.command.ElyonaAdminCommand;
 import world.elyona.items.command.MimicSellCommand;
 import world.elyona.items.config.ItemsConfig;
@@ -25,6 +32,8 @@ public class ElyonaItemsPlugin extends JavaPlugin {
     private EffectApplier effectApplier;
     private EquipmentListener equipmentListener;
     private MimicSellGui mimicSellGui;
+    private HologramManager hologramManager;
+    private PlayerStatManager playerStatManager;
 
     @Override
     public void onEnable() {
@@ -45,7 +54,8 @@ public class ElyonaItemsPlugin extends JavaPlugin {
         this.itemGenerator = new ItemGenerator(this);
         this.itemManager = new ItemManager(this);
         this.customEffectManager = new CustomEffectManager(this);
-        this.effectApplier = new EffectApplier(this, customEffectManager);
+        this.playerStatManager = new PlayerStatManager();
+        this.effectApplier = new EffectApplier(this, customEffectManager, playerStatManager);
 
         // リスナー登録
         this.equipmentListener = new EquipmentListener(this);
@@ -57,6 +67,20 @@ public class ElyonaItemsPlugin extends JavaPlugin {
         // GUIリスナー登録
         this.mimicSellGui = new MimicSellGui(this);
         getServer().getPluginManager().registerEvents(mimicSellGui, this);
+
+        // 敵HPホログラム
+        this.hologramManager = new HologramManager(this);
+        this.hologramManager.start();
+        getServer().getPluginManager().registerEvents(new MobDamageListener(this, hologramManager), this);
+
+        // バニラ武器・防具のダメージ/防御力表記統一（防具はバニラの素材由来補正をElyonaの数値で上書き）
+        WeaponDisplay weaponDisplay = new WeaponDisplay(this);
+        ArmorDisplay armorDisplay = new ArmorDisplay(this);
+        getServer().getPluginManager().registerEvents(
+                new VanillaItemDisplayListener(this, weaponDisplay, armorDisplay), this);
+
+        // 攻撃力・防御力ボーナスのダメージ計算への適用
+        getServer().getPluginManager().registerEvents(new AttackDamageListener(playerStatManager), this);
 
         // コマンド登録
         var mimicCmd = getCommand("mimic");
@@ -82,6 +106,10 @@ public class ElyonaItemsPlugin extends JavaPlugin {
         if (customEffectManager != null) {
             customEffectManager.cancelAll();
         }
+        // ホログラムを全て除去
+        if (hologramManager != null) {
+            hologramManager.stop();
+        }
         getLogger().info("ElyonaItems が無効化されました。");
     }
 
@@ -94,4 +122,5 @@ public class ElyonaItemsPlugin extends JavaPlugin {
     public EffectApplier getEffectApplier() { return effectApplier; }
     public EquipmentListener getEquipmentListener() { return equipmentListener; }
     public MimicSellGui getMimicSellGui() { return mimicSellGui; }
+    public PlayerStatManager getPlayerStatManager() { return playerStatManager; }
 }

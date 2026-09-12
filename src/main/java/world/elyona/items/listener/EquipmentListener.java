@@ -13,7 +13,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import world.elyona.items.ElyonaItemsPlugin;
 import world.elyona.items.api.ItemManager;
+import world.elyona.items.combat.PlayerStatManager;
 import world.elyona.items.effect.EffectApplier;
+import world.elyona.items.model.EffectDefinition;
+import world.elyona.items.model.EffectType;
 import world.elyona.items.model.ItemDefinition;
 import world.elyona.items.model.ItemType;
 
@@ -49,6 +52,7 @@ public class EquipmentListener implements Listener {
         // 全エフェクトを除去してカスタムエフェクトをクリーンアップ
         removeAllEquipmentEffects(player);
         plugin.getCustomEffectManager().cleanup(player);
+        plugin.getPlayerStatManager().cleanup(player.getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -80,13 +84,25 @@ public class EquipmentListener implements Listener {
         PlayerInventory inv = player.getInventory();
         ItemStack[] armorContents = inv.getArmorContents();
 
+        double attackBonus = 0.0;
+        double defenseBonus = 0.0;
+
         for (ItemStack item : armorContents) {
             if (!itemManager.isElyonaItem(item)) continue;
             ItemDefinition def = itemManager.getDefinition(item);
             if (def == null || def.getType() != ItemType.EQUIPMENT) continue;
             int quality = itemManager.getQuality(item);
             effectApplier.applyEquipmentEffects(player, def, quality);
+
+            for (EffectDefinition eff : def.getEffects()) {
+                if (eff.getType() == EffectType.STRENGTH) attackBonus += eff.calculateValue(quality);
+                if (eff.getType() == EffectType.RESISTANCE) defenseBonus += eff.calculateValue(quality);
+            }
         }
+
+        PlayerStatManager statManager = plugin.getPlayerStatManager();
+        statManager.setEquipmentAttackBonus(player.getUniqueId(), attackBonus);
+        statManager.setEquipmentDefenseBonus(player.getUniqueId(), defenseBonus);
     }
 
     /**
